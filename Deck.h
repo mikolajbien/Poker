@@ -16,10 +16,11 @@ struct Card {
 class Deck {
 private:
 	std::vector<Card> CardVector;//Container for the Cards
-	
 	std::default_random_engine rng; //Random number generator for the Deck
 	
 public:
 	Deck();
 	void Shuffle();
+	Card Deal();
+	void returnCardToDeck(Card CardToReturn);
 };

@@ -147,6 +147,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Deck.cpp" />
+    <ClCompile Include="Hand.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Poker.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
@@ -154,6 +156,7 @@
     <ClInclude Include="Deck.h" />
     <ClInclude Include="Hand.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Poker.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

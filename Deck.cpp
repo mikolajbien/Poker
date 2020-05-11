@@ -20,3 +20,16 @@ void Deck::Shuffle()
 {
 	std::shuffle(CardVector.begin(), CardVector.end(), rng);
 }
+
+Card Deck::Deal()
+{
+	Card cardToDeal = CardVector.back();
+	CardVector.pop_back();
+	return cardToDeal;
+}
+
+void Deck::returnCardToDeck(Card CardToReturn)
+{
+	CardVector.push_back(CardToReturn);
+}
+
