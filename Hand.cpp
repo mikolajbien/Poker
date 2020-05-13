@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Hand.h"
 
+
+
 void Hand::addCards(Card cardOne, Card cardTwo)
 {
 	cardsInHand.push_back(cardOne);
@@ -13,4 +15,13 @@ void Hand::RemoveCards(Card& cardOne, Card& cardTwo)
 	cardsInHand.pop_back();
 	cardTwo = cardsInHand.back();
 	cardsInHand.pop_back();
+}
+
+const bool Hand::getCards(Card& cardOne, Card& cardTwo)
+{
+	if (cardsInHand.size == 0)
+		return false;
+	cardOne = Hand::cardsInHand[0];
+	cardTwo = Hand::cardsInHand[1];
+	return true;
 }

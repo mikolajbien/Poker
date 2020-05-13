@@ -2,7 +2,7 @@
 //
 #include "stdafx.h"
 #include "Deck.h"
-
+#include "Player.h"
 int main()
 {
     int y{ 5 };
@@ -13,5 +13,8 @@ int main()
     Card card2 = myDeck.Deal();
     myDeck.returnCardToDeck(card1);
     myDeck.returnCardToDeck(card2);
+    Player Player1;
+    Player1.DealToPlayer(myDeck);
+  
 }
 //
