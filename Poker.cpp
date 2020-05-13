@@ -10,11 +10,11 @@ void Poker::DealOutCards()
 	}
 }
 
-Poker::Poker(Player player, Deck deck)
+Poker::Poker(Player player, Deck deck, int amountOfFlopCards)
 {
 	gameDeck = deck;
 	currentPlayer = player;
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < amountOfFlopCards; i++) {
 		flopCards.push_back(gameDeck.Deal());
 	}
 }
@@ -53,5 +53,35 @@ bool Poker::CheckFourOfAKind()
 	
 	return false;
 	
+
+}
+
+bool Poker::CheckThreeOfAKind()
+{
+	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
+
+	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
+
+	tempVector.insert(tempVector.end(), handvec.begin(), handvec.end());
+	int vecLength = tempVector.size();
+
+	for (int i = 0; i < vecLength - 2; i++) {
+		int numOccurences = 0;
+		int numCardsRemaining = vecLength;
+
+
+		for (int j = 0; j < vecLength; j++) {
+
+			if (tempVector[i].Type == tempVector[j].Type)
+				numOccurences++;
+			if (numOccurences == 3) {
+				return true;
+			}
+		}
+	}
+
+
+	return false;
+
 
 }

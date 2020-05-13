@@ -13,7 +13,7 @@ private:
 	std::vector<Card> flopCards;
 	Deck gameDeck;
 public:
-	Poker(Player player, Deck deck);
+	Poker(Player player, Deck deck, int amountOfFlopCards);
 	bool CheckRoyalFlush();
 	bool CheckStraightFlush();
 	bool CheckFourOfAKind();
