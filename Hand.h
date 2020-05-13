@@ -9,5 +9,6 @@ private:
 public:
 	void addCards(Card cardOne, Card cardTwo);
 	void RemoveCards(Card& cardOne, Card& cardTwo);
-	const bool getCards(Card& cardOne, Card& cardTwo);
+	bool getCards(Card& cardOne, Card& cardTwo) const;
+	std::vector<Card> getCardVector() const;
 };

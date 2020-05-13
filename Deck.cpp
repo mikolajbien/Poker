@@ -16,6 +16,11 @@ Deck::Deck() {
 	
 }
 
+Deck::Deck(std::vector<Card> copyVec)
+{
+	Deck::CardVector = copyVec;
+}
+
 void Deck::Shuffle()
 {
 	std::shuffle(CardVector.begin(), CardVector.end(), rng);

@@ -3,18 +3,16 @@
 #include "stdafx.h"
 #include "Deck.h"
 #include "Player.h"
+#include "Poker.h"
+
+std::vector<Card> testVec = { Card(HEARTS, FOUR), Card(CLUBS, FOUR), Card(SPADES, FOUR), Card(DIAMONDS,FOUR), Card(DIAMONDS, SIX) };
 int main()
 {
-    int y{ 5 };
-    Deck myDeck;
-    myDeck.Shuffle();
-    int x{ 5 };
-    Card card1 = myDeck.Deal();
-    Card card2 = myDeck.Deal();
-    myDeck.returnCardToDeck(card1);
-    myDeck.returnCardToDeck(card2);
-    Player Player1;
-    Player1.DealToPlayer(myDeck);
-  
+    
+    Player player1;
+    Deck testDeck(testVec);
+    player1.DealToPlayer(testDeck);
+    Poker testPoker(player1, testDeck);
+    bool test = testPoker.CheckFourOfAKind();
 }
 //

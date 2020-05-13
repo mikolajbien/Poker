@@ -17,11 +17,16 @@ void Hand::RemoveCards(Card& cardOne, Card& cardTwo)
 	cardsInHand.pop_back();
 }
 
-const bool Hand::getCards(Card& cardOne, Card& cardTwo)
+bool Hand::getCards(Card& cardOne, Card& cardTwo) const
 {
-	if (cardsInHand.size == 0)
+	if (cardsInHand.size() == 0)
 		return false;
 	cardOne = Hand::cardsInHand[0];
 	cardTwo = Hand::cardsInHand[1];
 	return true;
+}
+
+std::vector<Card> Hand::getCardVector() const
+{
+	return Hand::cardsInHand;
 }

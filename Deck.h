@@ -7,6 +7,9 @@ enum SUIT { HEARTS, CLUBS, SPADES, DIAMONDS };
 struct Card {
 	TYPE_CARD Type;
 	SUIT Suit;
+	Card() {//default constructor
+
+	}
 	Card(SUIT suit, TYPE_CARD type) {
 		this->Suit = suit;
 		this->Type = type;
@@ -20,6 +23,7 @@ private:
 	
 public:
 	Deck();
+	Deck(std::vector<Card> copyVec);
 	void Shuffle();
 	Card Deal();
 	void returnCardToDeck(Card CardToReturn);
