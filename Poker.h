@@ -18,7 +18,7 @@ public:
 	bool CheckStraightFlush();
 	bool CheckFourOfAKind();
 	bool CheckFullHouse();
-	bool CheckFlush();
+	bool CheckFlush(std::vector<Card> &flushCards);
 	bool CheckStraight();
 	bool CheckThreeOfAKind();
 	bool CheckTwoPairs();
