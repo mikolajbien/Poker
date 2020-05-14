@@ -87,12 +87,79 @@ bool Poker::CheckFlush(std::vector<Card>& flushCards)
 	return false;
 }
 
+bool Poker::CheckStraight(std::vector<Card>& straightCards)
+{
+	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
+	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
+	tempVector.insert(tempVector.end(), handvec.begin(), handvec.end());
+	int vecLength = tempVector.size();
+	bool containsAce = false;
+	for (int i = 0; i < vecLength; i++) {
+		if (tempVector[i].Type == ACE) {
+			containsAce = true;
+			break;
+		}
+			
+	}
+	std::stable_sort(tempVector.begin(), tempVector.end());//sort the hand + flop vector by the type of card 
+	int numCardsLeft = vecLength;
+	int cardsInConsecutiveOrder = 1;
+	for (int i = 0; i < vecLength - 1; i++) {
+		if (cardsInConsecutiveOrder + numCardsLeft < 5) {//impossible for a straight to happen
+			break;
+		}
+		if (((int)tempVector[i + 1].Type - (int)tempVector[i].Type) == 1) {
+			cardsInConsecutiveOrder++;
+		}
+		else if (((int)tempVector[i + 1].Type - (int)tempVector[i].Type) > 1) {
+			if (cardsInConsecutiveOrder >= 5)
+				break;
+			else
+				cardsInConsecutiveOrder = 0;
+		}
+		numCardsLeft--;
+	}
+	if (cardsInConsecutiveOrder >= 5)
+		return true;
+
+	//IF ACE IS PRESENT
+	if (containsAce) {
+		for (int i = 0; i < vecLength; i++) {//loop to make ace lows
+			if (tempVector[i].Type == ACE)
+				tempVector[i].Type = ACE_LOW;
+		}
+		std::stable_sort(tempVector.begin(), tempVector.end());
+		numCardsLeft = vecLength;
+		cardsInConsecutiveOrder = 1;
+		for (int i = 0; i < vecLength - 1; i++) {
+			if (cardsInConsecutiveOrder + numCardsLeft < 5) {//impossible for a straight to happen
+				break;
+			}
+			if (((int)tempVector[i + 1].Type - (int)tempVector[i].Type) == 1) {
+				cardsInConsecutiveOrder++;
+			}
+			else if (((int)tempVector[i + 1].Type - (int)tempVector[i].Type) > 1) {
+				if (cardsInConsecutiveOrder >= 5)
+					break;
+				else
+					cardsInConsecutiveOrder = 0;
+			}
+			numCardsLeft--;
+		}
+		if (cardsInConsecutiveOrder >= 5) {
+			return true;
+		}
+	}
+	else {
+		return false;
+	}
+	return false;
+}
+
 bool Poker::CheckThreeOfAKind()
 {
 	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
-
 	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
-
 	tempVector.insert(tempVector.end(), handvec.begin(), handvec.end());
 	int vecLength = tempVector.size();
 
@@ -110,11 +177,7 @@ bool Poker::CheckThreeOfAKind()
 			}
 		}
 	}
-
-
 	return false;
-
-
 }
 
 bool Poker::CheckOnePair()

@@ -2,7 +2,7 @@
 #include <random>
 #include <algorithm>
 #include "stdafx.h"
-enum TYPE_CARD { TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE };
+enum TYPE_CARD {ACE_LOW, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE };
 enum SUIT { HEARTS, CLUBS, SPADES, DIAMONDS };
 struct Card {
 	TYPE_CARD Type;
@@ -13,6 +13,11 @@ struct Card {
 	Card(SUIT suit, TYPE_CARD type) {
 		this->Suit = suit;
 		this->Type = type;
+	}
+	bool operator<(Card c) const {//operator overload so sorting may be done
+		if (this->Type < c.Type)
+			return true;
+		return false;
 	}
 };
 
