@@ -14,15 +14,15 @@ private:
 	Deck gameDeck;
 public:
 	Poker(Player player, Deck deck, int amountOfFlopCards);
-	bool CheckRoyalFlush();
-	bool CheckStraightFlush();
-	bool CheckFourOfAKind();
-	bool CheckFullHouse();
-	bool CheckFlush(std::vector<Card> &flushCards);
-	bool CheckStraight(std::vector<Card> &straightCards);
-	bool CheckThreeOfAKind();
-	bool CheckTwoPairs();
-	bool CheckOnePair();
+	bool CheckRoyalFlush() const;
+	bool CheckStraightFlush() const;
+	bool CheckFourOfAKind() const;
+	bool CheckFullHouse() const;
+	bool CheckFlush(std::vector<Card> &flushCards) const;
+	bool CheckStraight(std::vector<Card> &straightCards) const;
+	bool CheckThreeOfAKind() const;
+	bool CheckTwoPairs() const;
+	bool CheckOnePair() const;
 	Card EvaluateHighCard();
 
 	void DealOutCards();

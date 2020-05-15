@@ -19,14 +19,20 @@ Poker::Poker(Player player, Deck deck, int amountOfFlopCards)
 	}
 }
 
-bool Poker::CheckRoyalFlush()
+bool Poker::CheckRoyalFlush() const
 {
 	//std::vector<Card> tempVector;
 	//tempVector = Poker::flopCards;
 	return false;
 }
 
-bool Poker::CheckFourOfAKind()
+bool Poker::CheckStraightFlush() const
+{
+	std::vector<Card> vec;
+	return (Poker::CheckFlush(vec) && Poker::CheckStraight(vec));
+}
+
+bool Poker::CheckFourOfAKind() const
 {
 	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector	
 	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
@@ -54,7 +60,7 @@ bool Poker::CheckFourOfAKind()
 
 }
 
-bool Poker::CheckFlush(std::vector<Card>& flushCards)
+bool Poker::CheckFlush(std::vector<Card>& flushCards) const
 {
 	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
 
@@ -68,7 +74,7 @@ bool Poker::CheckFlush(std::vector<Card>& flushCards)
 		
 		for (int j = 0; j < vecLength; j++) {
 			if (tempVector[i].Suit == tempVector[j].Suit) {
-				numOccurencesOfSuit++;
+				tempNumOccurencesOfSuit++;
 				flushCards.push_back(tempVector[j]);
 			}
 
@@ -87,7 +93,7 @@ bool Poker::CheckFlush(std::vector<Card>& flushCards)
 	return false;
 }
 
-bool Poker::CheckStraight(std::vector<Card>& straightCards)
+bool Poker::CheckStraight(std::vector<Card>& straightCards) const
 {
 	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
 	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
@@ -156,7 +162,7 @@ bool Poker::CheckStraight(std::vector<Card>& straightCards)
 	return false;
 }
 
-bool Poker::CheckThreeOfAKind()
+bool Poker::CheckThreeOfAKind() const
 {
 	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
 	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
@@ -180,7 +186,7 @@ bool Poker::CheckThreeOfAKind()
 	return false;
 }
 
-bool Poker::CheckOnePair()
+bool Poker::CheckOnePair() const
 {
 	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
 

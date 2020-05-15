@@ -18,7 +18,7 @@ const bool Player::GetIsFolded()
 	return Player::isFolded;
 }
 
-const Hand Player::getHand()
+Hand Player::getHand() const
 {
 	return Player::playerHand;
 }

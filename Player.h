@@ -14,5 +14,5 @@ public:
 	void PlaceBet(const int betAmount);
 	const bool GetIsSittingOut();
 	const bool GetIsFolded();
-	const Hand getHand();
+	Hand getHand() const;
 };
