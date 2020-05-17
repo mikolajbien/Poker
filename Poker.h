@@ -12,15 +12,16 @@ private:
 	std::vector<Player> Players;
 	std::vector<Card> flopCards;
 	Deck gameDeck;
+	void removeCards(TYPE_CARD type, std::vector<Card> &cardVec) const;
 public:
 	Poker(Player player, Deck deck, int amountOfFlopCards);
 	bool CheckRoyalFlush() const;
 	bool CheckStraightFlush() const;
 	bool CheckFourOfAKind() const;
-	bool CheckFullHouse() const;
+	bool CheckFullHouse(Card &tripletCard, Card &pairCard) const;
 	bool CheckFlush(std::vector<Card> &flushCards) const;
 	bool CheckStraight(std::vector<Card> &straightCards) const;
-	bool CheckThreeOfAKind() const;
+	bool CheckThreeOfAKind(Card &threeOfAKindCard) const;
 	bool CheckTwoPairs() const;
 	bool CheckOnePair() const;
 	Card EvaluateHighCard();

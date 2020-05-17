@@ -10,6 +10,19 @@ void Poker::DealOutCards()
 	}
 }
 
+//removes all instances of cards whose type matches in the specified parameter in the specified vector
+void Poker::removeCards(TYPE_CARD type, std::vector<Card> &cardVec) const
+{
+	int vecLength = cardVec.size();
+	for (int i = 0; i < vecLength; i++) {
+		if (cardVec[i].Type == type) {
+			cardVec.erase(cardVec.cbegin() + i);
+			vecLength--;
+			i--;
+		}
+	}
+}
+
 Poker::Poker(Player player, Deck deck, int amountOfFlopCards)
 {
 	gameDeck = deck;
@@ -60,12 +73,68 @@ bool Poker::CheckFourOfAKind() const
 
 }
 
+bool Poker::CheckFullHouse(Card &tripletCard, Card &pairCard) const
+{
+	if (CheckThreeOfAKind(tripletCard)) {//run the checkThreeOfAKind Func
+		std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
+		std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
+		tempVector.insert(tempVector.end(), handvec.begin(), handvec.end());
+		
+		Poker::removeCards(tripletCard.Type, tempVector);
+		int vecLength = tempVector.size();
+		bool pairFound = false;
+		//loop to find a pair of cards in the remaining cards
+		for (int i = 0; i < vecLength - 1; i++) {
+			if (pairFound)
+				break;
+			int numOccurences = 0;
+
+			for (int j = 0; j < vecLength; j++) {
+				if (tempVector[i].Type == tempVector[j].Type) {
+					numOccurences++;
+					if (numOccurences == 2) {
+						pairCard = tempVector[i];
+						pairFound = true;
+						break;
+					}
+				}
+			}
+		}
+		if (pairFound) {//check for the possibility of a second pair that can be higher than the one we found
+			for (int i = 0; i < vecLength - 1; i++) {
+				if (tempVector[i].Type == pairCard.Type)//skip pair cards already found in prev loop
+					continue;
+				int numOccurences = 0;
+				for (int j = 0; j < vecLength; j++) {
+					if (tempVector[i].Type == tempVector[j].Type) {
+						numOccurences++;
+						if (numOccurences == 2) {
+							if (tempVector[i].Type > pairCard.Type) {
+								pairCard = tempVector[i];
+								
+							}
+							goto PAIR_FOUND_LAB;
+							
+						}
+							
+					}
+				}
+			}
+
+			PAIR_FOUND_LAB:return true;
+		}
+		else//no pair means no full house
+			return false;
+	}
+	else {//no triplet means no full house
+		return false;
+	}
+}
+
 bool Poker::CheckFlush(std::vector<Card>& flushCards) const
 {
 	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
-
 	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
-
 	tempVector.insert(tempVector.end(), handvec.begin(), handvec.end());
 	int vecLength = tempVector.size();
 	int numOccurencesOfSuit = 0;
@@ -77,8 +146,6 @@ bool Poker::CheckFlush(std::vector<Card>& flushCards) const
 				tempNumOccurencesOfSuit++;
 				flushCards.push_back(tempVector[j]);
 			}
-
-			
 		}
 		if (tempNumOccurencesOfSuit > numOccurencesOfSuit) {
 			numOccurencesOfSuit = tempNumOccurencesOfSuit;
@@ -162,27 +229,58 @@ bool Poker::CheckStraight(std::vector<Card>& straightCards) const
 	return false;
 }
 
-bool Poker::CheckThreeOfAKind() const
+bool Poker::CheckThreeOfAKind(Card& threeOfAKindCard) const
 {
 	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
 	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
 	tempVector.insert(tempVector.end(), handvec.begin(), handvec.end());
 	int vecLength = tempVector.size();
-
+	bool threeOfAKindFound = false;
 	for (int i = 0; i < vecLength - 2; i++) {
 		int numOccurences = 0;
-		int numCardsRemaining = vecLength;
+		//int numCardsRemaining = vecLength;
+		
+
+		for (int j = 0; j < vecLength; j++) {
+
+			if (tempVector[i].Type == tempVector[j].Type) {
+				
+				numOccurences++;
+				if (numOccurences == 3) {
+					threeOfAKindCard = tempVector[i];
+					threeOfAKindFound = true;
+				}
+			}
+		}
+		
+
+	}
+	Poker::removeCards(threeOfAKindCard.Type, tempVector);
+	vecLength = tempVector.size();
+	//checking to see if there is a higher three of a kind
+	for (int i = 0; i < vecLength - 2; i++) {
+		int numOccurences = 0;
+		//int numCardsRemaining = vecLength;
 
 
 		for (int j = 0; j < vecLength; j++) {
 
-			if (tempVector[i].Type == tempVector[j].Type)
+			if (tempVector[i].Type == tempVector[j].Type) {
+
 				numOccurences++;
-			if (numOccurences == 3) {
-				return true;
+				if (numOccurences == 3) {
+					if (tempVector[i].Type > threeOfAKindCard.Type) {
+						threeOfAKindCard = tempVector[i];
+						return true;
+					}
+				}
 			}
 		}
+
+
 	}
+	if (threeOfAKindFound)
+		return true;
 	return false;
 }
 
