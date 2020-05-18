@@ -6,10 +6,11 @@ class Player {
 private:
 	Hand playerHand;
 	PLAYER_STATUS Status;
-	bool isFolded;
-	bool isSittingOut;
+	bool isFolded = false;
+	bool isSittingOut = false;
 	int Money = 0;
 public:
+	
 	void DealToPlayer(Deck &gameDeck);
 	void PlaceBet(const int betAmount);
 	const bool GetIsSittingOut();

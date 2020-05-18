@@ -9,18 +9,6 @@ std::vector<Card> testVec = {Card(HEARTS,NINE), Card(HEARTS,NINE),Card(SPADES,NI
 int main()
 {
     
-    Player player1;
-    Deck testDeck(testVec);
-    std::vector<Card> temp;
-    player1.DealToPlayer(testDeck);
-    Poker testPoker(player1, testDeck, 5);
-    Card triplet(HEARTS, TWO);
-    Card Pair(HEARTS, TWO);
-    bool test2 = testPoker.CheckFullHouse(triplet, Pair);
-    bool test = testPoker.CheckFourOfAKind();
-   
-    bool test3 = testPoker.CheckStraight(temp);
-    bool test5 = testPoker.CheckFlush(temp);
-    bool test4 = testPoker.CheckStraightFlush();
+    Poker poker(5,3);
 }
 //
