@@ -16,6 +16,72 @@ struct Card {
 			return true;
 		return false;
 	}
+	std::string toString() {//put the card into a string representation
+		std::string result = "";
+		result += "Type: ";
+		
+		switch (this->Type) {
+		case TWO:
+			result += "Two";
+			break;
+		case THREE:
+			result += "Three";
+			break;
+		case FOUR:
+			result += "Four";
+			break;
+		case FIVE:
+			result += "Five";
+			break;
+		case SIX:
+			result += "Six";
+			break;
+		case SEVEN:
+			result += "Seven";
+			break;
+		case EIGHT:
+			result += "Eight";
+			break;
+		case NINE:
+			result += "Nine";
+			break;
+		case TEN:
+			result += "Ten";
+			break;
+		case JACK:
+			result += "Jack";
+			break;
+		case QUEEN:
+			result += "Queen";
+			break;
+		case KING:
+			result += "King";
+			break;
+		case ACE:
+			result += "Ace";
+			break;
+
+		}
+		result += "\nSuit: ";
+
+		
+		switch (this->Suit) {
+		case HEARTS:
+			result += "HEARTS";
+			break;
+		case CLUBS:
+			result += "CLUBS";
+			break;
+		case SPADES:
+			result += "SPADES";
+			break;
+		case DIAMONDS:
+			result += "DIAMONDS";
+
+		}
+
+		return result;
+	}
 };
 
 class Deck {
@@ -25,6 +91,7 @@ private:
 	
 public:
 	Deck();
+
 	Deck(std::vector<Card> copyVec);
 	void Shuffle();
 	Card Deal();

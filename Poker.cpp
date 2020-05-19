@@ -9,6 +9,8 @@ void Poker::DealOutCards()
 	}
 }
 
+
+
 HAND_RANKING Poker::EvaluateCurrentPlayerHand()
 {
 	std::vector<Card> temp;
@@ -34,6 +36,9 @@ HAND_RANKING Poker::EvaluateCurrentPlayerHand()
 	
 	return HAND_RANKING::HIGH_CARD;
 }
+
+
+
 
 //removes all instances of cards whose type matches in the specified parameter in the specified vector
 void Poker::removeCards(TYPE_CARD type, std::vector<Card>& cardVec) const
@@ -61,14 +66,21 @@ Poker::Poker(int amountOfFlopCards, int numPlayers)//TEST
 {
 	this->gameDeck = Deck();
 	this->gameDeck.Shuffle();
+	//this->gameDeck = Deck({ Card(DIAMONDS, TEN), Card(HEARTS, JACK), Card(CLUBS, SEVEN), Card(SPADES, NINE), Card(HEARTS, EIGHT), Card(SPADES, FIVE), Card(DIAMONDS, EIGHT),Card(DIAMONDS, JACK), Card(CLUBS, SIX), Card(DIAMONDS, THREE), Card(CLUBS, FIVE), });
 	for (int i = 0; i < numPlayers; i++)
 	{
 		Players.push_back(Player());
 	}
 	DealOutCards();
+	for (int i = 0; i < numPlayers; i++)
+	{
+		std::cout << "Player " + std::to_string(i) + "\nHand: " + Players[i].getHand().getCardVector()[0].toString() + "\n" + Players[i].getHand().getCardVector()[1].toString() << "\n" << std::endl;
+	}
 	for (int i = 0; i < amountOfFlopCards; i++)
 		flopCards.push_back(gameDeck.Deal());
-	
+	std::cout << "FLOP CARDS" << std::endl;
+	for (int i = 0; i < amountOfFlopCards; i++)
+		std::cout << this->flopCards[i].toString() << std::endl;
 	for (int i = 0; i < numPlayers; i++) {
 		currentPlayer = Players[i];
 		std::cout << (int)EvaluateCurrentPlayerHand() << std::endl;
@@ -76,7 +88,7 @@ Poker::Poker(int amountOfFlopCards, int numPlayers)//TEST
 	}
 	
 }
-
+//
 bool Poker::CheckRoyalFlush() const
 {
 	/*std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector	
@@ -113,6 +125,7 @@ bool Poker::CheckStraightFlush(std::vector<Card> &straightflushCards) const
 		std::stable_sort(straightflushCards.begin(), straightflushCards.end());
 		return true;
 	}
+	return false;
 }
 
 bool Poker::CheckFourOfAKind() const
@@ -252,7 +265,7 @@ bool Poker::CheckStraight(std::vector<Card>& straightCards) const
 			if (cardsInConsecutiveOrder >= 5)
 				break;
 			else
-				cardsInConsecutiveOrder = 0;
+				cardsInConsecutiveOrder = 1;
 		}
 		numCardsLeft--;
 	}
@@ -279,7 +292,7 @@ bool Poker::CheckStraight(std::vector<Card>& straightCards) const
 				if (cardsInConsecutiveOrder >= 5)
 					break;
 				else
-					cardsInConsecutiveOrder = 0;
+					cardsInConsecutiveOrder = 1;
 			}
 			numCardsLeft--;
 		}
