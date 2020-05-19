@@ -9,6 +9,6 @@ std::vector<Card> testVec = {Card(HEARTS,NINE), Card(HEARTS,NINE),Card(SPADES,NI
 int main()
 {
     
-    Poker poker(5,3);
+    Poker poker(5, 1);
 }
 //

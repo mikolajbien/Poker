@@ -64,9 +64,9 @@ Poker::Poker(Player player, Deck deck, int amountOfFlopCards)
 
 Poker::Poker(int amountOfFlopCards, int numPlayers)//TEST
 {
-	this->gameDeck = Deck();
-	this->gameDeck.Shuffle();
-	//this->gameDeck = Deck({ Card(DIAMONDS, TEN), Card(HEARTS, JACK), Card(CLUBS, SEVEN), Card(SPADES, NINE), Card(HEARTS, EIGHT), Card(SPADES, FIVE), Card(DIAMONDS, EIGHT),Card(DIAMONDS, JACK), Card(CLUBS, SIX), Card(DIAMONDS, THREE), Card(CLUBS, FIVE), });
+	//this->gameDeck = Deck();
+	//this->gameDeck.Shuffle();
+	this->gameDeck = Deck({ Card(CLUBS, ACE), Card(CLUBS, QUEEN), Card(CLUBS, JACK), Card(CLUBS, KING), Card(HEARTS, SEVEN), Card(SPADES, TEN), Card(CLUBS, TEN) });
 	for (int i = 0; i < numPlayers; i++)
 	{
 		Players.push_back(Player());
@@ -96,7 +96,7 @@ bool Poker::CheckRoyalFlush() const
 	tempVector.insert(tempVector.end(), handvec.begin(), handvec.end());*/
 	std::vector<Card> flushCards;
 	if (Poker::CheckStraightFlush(flushCards)) {
-		int i = flushCards.size();
+		int i = flushCards.size() - 1;
 		if (flushCards[i].Type != ACE)
 			return false;
 		i--;
@@ -117,17 +117,83 @@ bool Poker::CheckRoyalFlush() const
 		return false;
 }
 
-bool Poker::CheckStraightFlush(std::vector<Card> &straightflushCards) const
+bool Poker::CheckStraightFlush(std::vector<Card>& straightFlushCards) const
 {
-	std::vector<Card> vec;
-	if (Poker::CheckStraight(vec) && Poker::CheckFlush(vec)) {
-		straightflushCards = vec;
-		std::stable_sort(straightflushCards.begin(), straightflushCards.end());
-		return true;
+	//
+	if (Poker::CheckFlush(straightFlushCards)) {
+		std::stable_sort(straightFlushCards.begin(), straightFlushCards.end());
+		bool containsAce = false;
+		for (int i = 0; i < straightFlushCards.size(); i++) {
+			if (straightFlushCards[i].Type == ACE) {
+				containsAce = true;
+				break;
+			}
+
+		}
+		
+		int vecLength = straightFlushCards.size();
+		int numCardsLeft = vecLength;
+		int cardsInConsecutiveOrder = 1;
+		for (int i = 0; i < vecLength - 1; i++) {
+			
+			if (cardsInConsecutiveOrder + numCardsLeft < 5) {//impossible for a straight to happen
+				break;
+			}
+			if (((int)straightFlushCards[i + 1].Type - (int)straightFlushCards[i].Type) == 1) {
+				
+				cardsInConsecutiveOrder++;
+
+			}
+			else if (((int)straightFlushCards[i + 1].Type - (int)straightFlushCards[i].Type) > 1) {//if a card is not in consecutive order
+				if (cardsInConsecutiveOrder >= 5)//straight is found
+					break;
+				else {//reset 
+					cardsInConsecutiveOrder = 1;
+					
+				}
+			}
+			numCardsLeft--;
+		}
+		if (cardsInConsecutiveOrder >= 5)
+			return true;
+
+
+		if (containsAce) {//if an ace was found we have to check again with ace being low
+			
+			for (int i = 0; i < vecLength; i++) {//loop to make ace lows
+				if (straightFlushCards[i].Type == ACE)
+					straightFlushCards[i].Type = ACE_LOW;
+			}
+			std::stable_sort(straightFlushCards.begin(), straightFlushCards.end());
+			numCardsLeft = vecLength;
+			cardsInConsecutiveOrder = 1;
+			for (int i = 0; i < vecLength - 1; i++) {
+				if (cardsInConsecutiveOrder + numCardsLeft < 5) {//impossible for a straight to happen
+					break;
+				}
+				if (((int)straightFlushCards[i + 1].Type - (int)straightFlushCards[i].Type) == 1) {
+					cardsInConsecutiveOrder++;
+				}
+				else if (((int)straightFlushCards[i + 1].Type - (int)straightFlushCards[i].Type) > 1) {//if a card is not in consecutive order
+					if (cardsInConsecutiveOrder >= 5)//straight is found
+						break;
+					else {//reset
+						cardsInConsecutiveOrder = 1;
+						
+					}
+				}
+				numCardsLeft--;
+			}
+			if (cardsInConsecutiveOrder >= 5) {
+				return true;
+			}
+		}
+		else {
+			return false;
+		}
 	}
 	return false;
 }
-
 bool Poker::CheckFourOfAKind() const
 {
 	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector	
@@ -216,16 +282,17 @@ bool Poker::CheckFlush(std::vector<Card>& flushCards) const
 	int vecLength = tempVector.size();
 	int numOccurencesOfSuit = 0;
 	for (int i = 0; i < vecLength - 4; i++) {
-		int tempNumOccurencesOfSuit = 0;
+		
+		numOccurencesOfSuit = 0;
 		
 		for (int j = 0; j < vecLength; j++) {
 			if (tempVector[i].Suit == tempVector[j].Suit) {
-				tempNumOccurencesOfSuit++;
+				numOccurencesOfSuit++;
 				flushCards.push_back(tempVector[j]);
 			}
 		}
-		if (tempNumOccurencesOfSuit > numOccurencesOfSuit) {
-			numOccurencesOfSuit = tempNumOccurencesOfSuit;
+		if (numOccurencesOfSuit >= 5) {
+			break;
 		}
 		else {
 			flushCards.clear();//clear out the flushCards vector if there is not a flush with the card at hand
@@ -234,9 +301,10 @@ bool Poker::CheckFlush(std::vector<Card>& flushCards) const
 	if (numOccurencesOfSuit >= 5) {
 		return true;
 	}
-	return false;
+	else
+		return false;
 }
-
+//
 bool Poker::CheckStraight(std::vector<Card>& straightCards) const
 {
 	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
@@ -255,17 +323,23 @@ bool Poker::CheckStraight(std::vector<Card>& straightCards) const
 	int numCardsLeft = vecLength;
 	int cardsInConsecutiveOrder = 1;
 	for (int i = 0; i < vecLength - 1; i++) {
+		if (cardsInConsecutiveOrder == 1)
+			straightCards.push_back(tempVector[i]);
 		if (cardsInConsecutiveOrder + numCardsLeft < 5) {//impossible for a straight to happen
 			break;
 		}
 		if (((int)tempVector[i + 1].Type - (int)tempVector[i].Type) == 1) {
+			straightCards.push_back(tempVector[i + 1]);
 			cardsInConsecutiveOrder++;
+			
 		}
 		else if (((int)tempVector[i + 1].Type - (int)tempVector[i].Type) > 1) {
 			if (cardsInConsecutiveOrder >= 5)
 				break;
-			else
+			else {
 				cardsInConsecutiveOrder = 1;
+				straightCards.clear();
+			}
 		}
 		numCardsLeft--;
 	}

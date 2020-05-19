@@ -3,6 +3,13 @@
 #include "Player.h"
 #include "Deck.h"
 enum class HAND_RANKING { HIGH_CARD, ONE_PAIR, TWO_PAIR, THREE_OF_A_KIND, STRAIGHT, FLUSH, FULL_HOUSE, FOUR_OF_A_KIND, STRAIGHT_FLUSH, ROYAL_FLUSH };
+
+struct Ranking {
+	Player Owner;
+	HAND_RANKING Ranking;
+
+};
+
 class Poker {//class representing a Poker Game
 private:
 	Player currentPlayer;
@@ -33,4 +40,5 @@ public:
 	void DealOutCards();
 
 	HAND_RANKING EvaluateCurrentPlayerHand();
+
 };
