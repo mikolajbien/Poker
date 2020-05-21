@@ -10,31 +10,116 @@ void Poker::DealOutCards()
 }
 
 
-
+//this method ranks each players hands including tiebreaking measures
 HAND_RANKING Poker::EvaluateCurrentPlayerHand()
 {
 	std::vector<Card> temp;
-	Card cardTemp(HEARTS,KING);
-	if (Poker::CheckRoyalFlush())
+	Card cardTemp(HEARTS, KING);
+	Card cardTemp2(CLUBS, KING);
+	Ranking rank(&(this->currentPlayer));
+	if (Poker::CheckRoyalFlush()) {
+		rank.rankOfHand = HAND_RANKING::ROYAL_FLUSH;
+		
 		return HAND_RANKING::ROYAL_FLUSH;
-	if (Poker::CheckStraightFlush(temp))
+	}
+	if (Poker::CheckStraightFlush(temp, cardTemp)) {
+		rank.rankOfHand = HAND_RANKING::STRAIGHT_FLUSH;
+		rank.tiebreakerCards.push_back(cardTemp.Type);
+		handRankings.push_back(rank);
 		return HAND_RANKING::STRAIGHT_FLUSH;
-	if (Poker::CheckFourOfAKind())
+	}
+	if (Poker::CheckFourOfAKind()) {
+		rank.rankOfHand = HAND_RANKING::FOUR_OF_A_KIND;
 		return HAND_RANKING::FOUR_OF_A_KIND;
-	if (Poker::CheckFullHouse(cardTemp, cardTemp))
+	}
+	if (Poker::CheckFullHouse(cardTemp, cardTemp2)) {
+		rank.rankOfHand = HAND_RANKING::FULL_HOUSE;
+		rank.tiebreakerCards.push_back(cardTemp.Type);//triplet
+		rank.tiebreakerCards.push_back(cardTemp2.Type);//pair
+		handRankings.push_back(rank);
 		return HAND_RANKING::FULL_HOUSE;
-	if (Poker::CheckFlush(temp))
+	}
+	if (Poker::CheckFlush(temp)) {
+		rank.rankOfHand = HAND_RANKING::FLUSH;
+		rank.tiebreakerCards.push_back(temp.back().Type);
+		handRankings.push_back(rank);
 		return HAND_RANKING::FLUSH;
-	if (Poker::CheckStraight(temp))
+	}
+	if (Poker::CheckStraight(temp)) {
+		rank.rankOfHand = HAND_RANKING::STRAIGHT;
+		rank.tiebreakerCards.push_back(temp.back().Type);
+		handRankings.push_back(rank);
 		return HAND_RANKING::STRAIGHT;
-	if (Poker::CheckThreeOfAKind(cardTemp))
+	}
+	if (Poker::CheckThreeOfAKind(cardTemp)) {
+		rank.rankOfHand = HAND_RANKING::THREE_OF_A_KIND;
+		rank.tiebreakerCards.push_back(cardTemp.Type);
+		handRankings.push_back(rank);
+
+		//determine high cards 
+		std::vector<Card> handAndFlopVec = Poker::combineHandAndFlopCards();
+		removeCards(cardTemp.Type, handAndFlopVec);
+		std::sort(handAndFlopVec.begin(), handAndFlopVec.end());
+
+		//push the two high cards possible in a three of a kind
+		rank.tiebreakerCards.push_back(handAndFlopVec[handAndFlopVec.size() - 1].Type);//high card
+		rank.tiebreakerCards.push_back(handAndFlopVec[handAndFlopVec.size() - 2].Type);//second highest high card
+
+
+
 		return HAND_RANKING::THREE_OF_A_KIND;
-	if (Poker::CheckTwoPairs(cardTemp, cardTemp))
+	}
+	if (Poker::CheckTwoPairs(cardTemp, cardTemp2)) {
+		rank.rankOfHand = HAND_RANKING::TWO_PAIR;
+		//value of the pairs will determine tiebreakers
+		rank.tiebreakerCards.push_back(cardTemp.Type);
+		rank.tiebreakerCards.push_back(cardTemp2.Type);
+
+		//remove the pairs
+		std::vector<Card> handAndFlopVec = Poker::combineHandAndFlopCards();
+		Poker::removeCards(cardTemp.Type, handAndFlopVec);
+		Poker::removeCards(cardTemp2.Type, handAndFlopVec);
+
+		//add the kicker card needed for rare tiebreakers
+		rank.tiebreakerCards.push_back(Poker::EvaluateHighCard(handAndFlopVec).Type);
+
+		handRankings.push_back(rank);
 		return HAND_RANKING::TWO_PAIR;
-	if (Poker::CheckOnePair())
+	}
+	if (Poker::CheckOnePair(cardTemp)) {
+		rank.rankOfHand = HAND_RANKING::ONE_PAIR;
+		rank.tiebreakerCards.push_back(cardTemp.Type);
+
+		//remove the pair
+		std::vector<Card> handAndFlopVec = Poker::combineHandAndFlopCards();
+		Poker::removeCards(cardTemp.Type, handAndFlopVec);
+
+		//add the three kickers
+		
+		rank.tiebreakerCards.push_back(handAndFlopVec[handAndFlopVec.size() - 1].Type);//high card
+		rank.tiebreakerCards.push_back(handAndFlopVec[handAndFlopVec.size() - 2].Type);//second highest high card
+		rank.tiebreakerCards.push_back(handAndFlopVec[handAndFlopVec.size() - 3].Type);//third highest
+
+		handRankings.push_back(rank);
 		return HAND_RANKING::ONE_PAIR;
-	
+	}
+
+	//IF NO PAIRS are found
+	std::vector<Card> handAndFlopVec = Poker::combineHandAndFlopCards();
+	std::stable_sort(handAndFlopVec.begin(), handAndFlopVec.end());
+
+	rank.tiebreakerCards.push_back(handAndFlopVec[handAndFlopVec.size() - 1].Type);//high card
+	rank.tiebreakerCards.push_back(handAndFlopVec[handAndFlopVec.size() - 2].Type);//second highest high card
+	rank.tiebreakerCards.push_back(handAndFlopVec[handAndFlopVec.size() - 3].Type);//third highest
+	rank.tiebreakerCards.push_back(handAndFlopVec[handAndFlopVec.size() - 4].Type);//fourth highest
+	rank.tiebreakerCards.push_back(handAndFlopVec[handAndFlopVec.size() - 5].Type);//fifth highest
 	return HAND_RANKING::HIGH_CARD;
+}
+
+Player* Poker::DetermineWinner()
+{
+	std::stable_sort(handRankings.begin(), handRankings.end());
+	
 }
 
 
@@ -53,23 +138,25 @@ void Poker::removeCards(TYPE_CARD type, std::vector<Card>& cardVec) const
 	}
 }
 
-Poker::Poker(Player player, Deck deck, int amountOfFlopCards)
+std::vector<Card> Poker::combineHandAndFlopCards() const
 {
-	gameDeck = deck;
-	currentPlayer = player;
-	for (int i = 0; i < amountOfFlopCards; i++) {
-		flopCards.push_back(gameDeck.Deal());
-	}
+	std::vector<Card> result = this->flopCards;
+	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
+	result.insert(result.end(), handvec.begin(), handvec.end());
+	
+	return result;
 }
+
 
 Poker::Poker(int amountOfFlopCards, int numPlayers)//TEST
 {
-	//this->gameDeck = Deck();
-	//this->gameDeck.Shuffle();
-	this->gameDeck = Deck({ Card(CLUBS, ACE), Card(CLUBS, QUEEN), Card(CLUBS, JACK), Card(CLUBS, KING), Card(HEARTS, SEVEN), Card(SPADES, TEN), Card(CLUBS, TEN) });
+	this->gameDeck = Deck();
+	this->gameDeck.Shuffle();
+	//this->gameDeck = Deck({Card(DIAMONDS, TEN) ,Card(HEARTS, ACE) ,Card(CLUBS, FIVE), Card(HEARTS, NINE), Card(HEARTS, EIGHT), Card(HEARTS, FIVE), Card(HEARTS, FOUR), Card(HEARTS, QUEEN), Card(HEARTS, TWO) });
 	for (int i = 0; i < numPlayers; i++)
 	{
-		Players.push_back(Player());
+		std::string name = "player " + std::to_string(i);
+		Players.push_back(Player(name));
 	}
 	DealOutCards();
 	for (int i = 0; i < numPlayers; i++)
@@ -95,7 +182,8 @@ bool Poker::CheckRoyalFlush() const
 	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
 	tempVector.insert(tempVector.end(), handvec.begin(), handvec.end());*/
 	std::vector<Card> flushCards;
-	if (Poker::CheckStraightFlush(flushCards)) {
+	Card temp(HEARTS, ACE_LOW);
+	if (Poker::CheckStraightFlush(flushCards, temp)) {
 		int i = flushCards.size() - 1;
 		if (flushCards[i].Type != ACE)
 			return false;
@@ -117,7 +205,7 @@ bool Poker::CheckRoyalFlush() const
 		return false;
 }
 
-bool Poker::CheckStraightFlush(std::vector<Card>& straightFlushCards) const
+bool Poker::CheckStraightFlush(std::vector<Card>& straightFlushCards, Card &highCard) const
 {
 	//
 	if (Poker::CheckFlush(straightFlushCards)) {
@@ -136,7 +224,7 @@ bool Poker::CheckStraightFlush(std::vector<Card>& straightFlushCards) const
 		int cardsInConsecutiveOrder = 1;
 		for (int i = 0; i < vecLength - 1; i++) {
 			
-			if (cardsInConsecutiveOrder + numCardsLeft < 5) {//impossible for a straight to happen
+			if ((cardsInConsecutiveOrder + numCardsLeft) < 5) {//impossible for a straight to happen
 				break;
 			}
 			if (((int)straightFlushCards[i + 1].Type - (int)straightFlushCards[i].Type) == 1) {
@@ -154,9 +242,10 @@ bool Poker::CheckStraightFlush(std::vector<Card>& straightFlushCards) const
 			}
 			numCardsLeft--;
 		}
-		if (cardsInConsecutiveOrder >= 5)
+		if (cardsInConsecutiveOrder >= 5) {
+			highCard = straightFlushCards.back();
 			return true;
-
+		}
 
 		if (containsAce) {//if an ace was found we have to check again with ace being low
 			
@@ -185,6 +274,7 @@ bool Poker::CheckStraightFlush(std::vector<Card>& straightFlushCards) const
 				numCardsLeft--;
 			}
 			if (cardsInConsecutiveOrder >= 5) {
+				highCard = straightFlushCards.back();
 				return true;
 			}
 		}
@@ -299,6 +389,7 @@ bool Poker::CheckFlush(std::vector<Card>& flushCards) const
 		}
 	}
 	if (numOccurencesOfSuit >= 5) {
+		std::stable_sort(flushCards.begin(), flushCards.end());
 		return true;
 	}
 	else
@@ -487,7 +578,7 @@ bool Poker::CheckTwoPairs(Card &higherPairCard, Card &lowerPairCard) const
 	return false;
 }
 
-bool Poker::CheckOnePair() const
+bool Poker::CheckOnePair(Card& pairCard) const
 {
 	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
 	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
@@ -502,6 +593,7 @@ bool Poker::CheckOnePair() const
 			if (tempVector[i].Type == tempVector[j].Type)
 				numOccurences++;
 			if (numOccurences == 2) {
+				pairCard = tempVector[i];
 				return true;
 			}
 		}
@@ -509,7 +601,7 @@ bool Poker::CheckOnePair() const
 	return false;
 }
 
-Card Poker::EvaluateHighCard()
+Card Poker::EvaluateHighCard() const
 {
 	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
 	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();

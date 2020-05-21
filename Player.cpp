@@ -1,7 +1,16 @@
 #include "stdafx.h"
 #include "Player.h"
-#include "stdafx.h"
-#include "Player.h"
+
+
+Player::Player()
+{
+}
+
+Player::Player(std::string name)
+{
+	this->name = name;
+	this->Status = PLAYER_STATUS::NO_STATUS;
+}
 
 void Player::DealToPlayer(Deck &gameDeck)
 {
