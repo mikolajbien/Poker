@@ -9,6 +9,11 @@ std::vector<Card> testVec = {Card(HEARTS,NINE), Card(HEARTS,NINE),Card(SPADES,NI
 int main()
 {
     
+   
     Poker poker(5, 5);
+    std::vector<Player*> winners = poker.DetermineWinner();
+
+    for (std::vector<Player*>::iterator it = winners.begin(); it != winners.end(); ++it)
+        std::cout << (*it)->getName() << std::endl;
 }
 //

@@ -16,17 +16,197 @@ struct Ranking {
 		Owner = playerPtr;
 		rankOfHand = HAND_RANKING::HIGH_CARD;
 	}
-	bool operator<(Ranking r) const {//for sorting
-		if (this->rankOfHand < r.rankOfHand) {
+	bool operator<(Ranking r) const {//for sorting and breaking ties
+		if (this->rankOfHand < r.rankOfHand)
 			return true;
+		else if (this->rankOfHand > r.rankOfHand)
+			return false;
+		else {
+			switch (rankOfHand) {
+			case HAND_RANKING::HIGH_CARD:
+				if (this->tiebreakerCards[0] > r.tiebreakerCards[0]) {
+					return false;
+				}
+				else if (this->tiebreakerCards[0] < r.tiebreakerCards[0])
+					return true;
+				else {
+					if (this->tiebreakerCards[1] > r.tiebreakerCards[1]) {
+						return false;
+					}
+					else if (this->tiebreakerCards[1] < r.tiebreakerCards[1]) {
+						return true;
+					}
+					else {
+						if (this->tiebreakerCards[2] > r.tiebreakerCards[2]) {
+							return false;
+						}
+						else if (this->tiebreakerCards[2] < r.tiebreakerCards[2]) {
+							return true;
+						}
+						else {
+							if (this->tiebreakerCards[3] > r.tiebreakerCards[3]) {
+								return false;
+							}
+							else if (this->tiebreakerCards[3] < r.tiebreakerCards[3]) {
+								return true;
+							}
+							else {
+								if (this->tiebreakerCards[4] > r.tiebreakerCards[4]) {
+									return false;
+								}
+								else if (this->tiebreakerCards[4] < r.tiebreakerCards[4]) {
+									return true;
+								}
+								else//hands are equal!
+									return false;
+							}
+						}
+					}
+				}
+				break;
+			case HAND_RANKING::ONE_PAIR:
+				if (this->tiebreakerCards[0] > r.tiebreakerCards[0]) {//pair
+					return false;
+				}
+				else if (this->tiebreakerCards[0] < r.tiebreakerCards[0])//pair
+					return true;
+				else {
+					if (this->tiebreakerCards[1] > r.tiebreakerCards[1]) {//kicker
+						return false;
+					}
+					else if (this->tiebreakerCards[1] < r.tiebreakerCards[1]) {//kicker
+						return true;
+					}
+					else {
+						if (this->tiebreakerCards[2] > r.tiebreakerCards[2]) {//second kicker
+							return false;
+						}
+						else if (this->tiebreakerCards[2] < r.tiebreakerCards[2]) {//second kicker
+							return true;
+						}
+						else {
+							if (this->tiebreakerCards[3] > r.tiebreakerCards[3]) {//second kicker
+								return false;
+							}
+							else if (this->tiebreakerCards[3] < r.tiebreakerCards[3]) {//second kicker
+								return true;
+							}
+							else
+								return false; //hands are equal!
+						}
+					}
+				}
+				break;
+
+
+			case HAND_RANKING::TWO_PAIR:
+				if (this->tiebreakerCards[0] > r.tiebreakerCards[0]) {//pair
+					return false;
+				}
+				else if (this->tiebreakerCards[0] < r.tiebreakerCards[0])//pair
+					return true;
+				else {
+					if (this->tiebreakerCards[1] > r.tiebreakerCards[1]) {//kicker
+						return false;
+					}
+					else if (this->tiebreakerCards[1] < r.tiebreakerCards[1]) {//kicker
+						return true;
+					}
+				}
+			case HAND_RANKING::THREE_OF_A_KIND:
+				if (this->tiebreakerCards[0] > r.tiebreakerCards[0]) {//triplet
+					return false;
+				}
+				else if (this->tiebreakerCards[0] < r.tiebreakerCards[0])//triplet
+					return true;
+				else {
+					if (this->tiebreakerCards[1] > r.tiebreakerCards[1]) {//kicker 1 
+						return false;
+					}
+					else if (this->tiebreakerCards[1] < r.tiebreakerCards[1]) {//kicker 1 
+						return true;
+					}
+					else {
+						if (this->tiebreakerCards[2] > r.tiebreakerCards[2]) {//kicker 2 
+							return false;
+						}
+						else if (this->tiebreakerCards[2] < r.tiebreakerCards[2]) {//kicker 2
+							return true;
+						}
+						else//hands are equal!
+							return false;
+					}
+				}
+				break;
+
+			case HAND_RANKING::STRAIGHT:
+				if (this->tiebreakerCards[0] > r.tiebreakerCards[0]) {//straight high card
+					return false;
+				}
+				else if (this->tiebreakerCards[0] < r.tiebreakerCards[0])//straight high card
+					return true;
+				else
+					return false; // equal hands
+				break;
+			case HAND_RANKING::FLUSH:
+				if (this->tiebreakerCards[0] > r.tiebreakerCards[0]) {//flush high card
+					return false;
+				}
+				else if (this->tiebreakerCards[0] < r.tiebreakerCards[0])//flush high card
+					return true;
+				else
+					return false;//equal flushes
+				break;
+			case HAND_RANKING::FULL_HOUSE:
+				if (this->tiebreakerCards[0] > r.tiebreakerCards[0]) {//triplet
+					return false;
+				}
+				else if (this->tiebreakerCards[0] < r.tiebreakerCards[0])//triplet
+					return true;
+				else {
+					if (this->tiebreakerCards[1] > r.tiebreakerCards[1]) {//pair
+						return false;
+					}
+					else if (this->tiebreakerCards[1] < r.tiebreakerCards[1]) {//pair
+						return true;
+					}
+					else
+						return false;//equal full houses
+				}
+			case HAND_RANKING::FOUR_OF_A_KIND:
+				if (this->tiebreakerCards[0] > r.tiebreakerCards[0]) {//triplet
+					return false;
+				}
+				else if (this->tiebreakerCards[0] < r.tiebreakerCards[0])//triplet
+					return true;
+				else
+					return false;
+				break;
+
+			case HAND_RANKING::STRAIGHT_FLUSH:
+				if (this->tiebreakerCards[0] > r.tiebreakerCards[0]) {//flush high card
+					return false;
+				}
+				else if (this->tiebreakerCards[0] < r.tiebreakerCards[0])//flush high card
+					return true;
+				else
+					return false;
+				break;
+			case HAND_RANKING::ROYAL_FLUSH:
+				return false;
+
+
+			default:
+				return false;
+			}
 		}
-		return false;
 	}
+		
 
 };											
 class Poker {//class representing a Poker Game
 private:
-	Player currentPlayer;
+	Player* currentPlayer;
 	
 	double bigBlindAmt;
 	double smlBlindAmt;
@@ -56,6 +236,6 @@ public:
 
 	void DealOutCards();
 	HAND_RANKING EvaluateCurrentPlayerHand();
-	Player* DetermineWinner();
+	std::vector<Player*> DetermineWinner();
 
 };

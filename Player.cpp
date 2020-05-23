@@ -31,3 +31,8 @@ Hand Player::getHand() const
 {
 	return Player::playerHand;
 }
+
+std::string Player::getName() const
+{
+	return this->name;
+}

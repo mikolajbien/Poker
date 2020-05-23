@@ -16,7 +16,7 @@ HAND_RANKING Poker::EvaluateCurrentPlayerHand()
 	std::vector<Card> temp;
 	Card cardTemp(HEARTS, KING);
 	Card cardTemp2(CLUBS, KING);
-	Ranking rank(&(this->currentPlayer));
+	Ranking rank((this->currentPlayer));
 	if (Poker::CheckRoyalFlush()) {
 		rank.rankOfHand = HAND_RANKING::ROYAL_FLUSH;
 		
@@ -30,6 +30,7 @@ HAND_RANKING Poker::EvaluateCurrentPlayerHand()
 	}
 	if (Poker::CheckFourOfAKind()) {
 		rank.rankOfHand = HAND_RANKING::FOUR_OF_A_KIND;
+		//no tie breaking logic needed
 		return HAND_RANKING::FOUR_OF_A_KIND;
 	}
 	if (Poker::CheckFullHouse(cardTemp, cardTemp2)) {
@@ -54,7 +55,7 @@ HAND_RANKING Poker::EvaluateCurrentPlayerHand()
 	if (Poker::CheckThreeOfAKind(cardTemp)) {
 		rank.rankOfHand = HAND_RANKING::THREE_OF_A_KIND;
 		rank.tiebreakerCards.push_back(cardTemp.Type);
-		handRankings.push_back(rank);
+		
 
 		//determine high cards 
 		std::vector<Card> handAndFlopVec = Poker::combineHandAndFlopCards();
@@ -64,7 +65,7 @@ HAND_RANKING Poker::EvaluateCurrentPlayerHand()
 		//push the two high cards possible in a three of a kind
 		rank.tiebreakerCards.push_back(handAndFlopVec[handAndFlopVec.size() - 1].Type);//high card
 		rank.tiebreakerCards.push_back(handAndFlopVec[handAndFlopVec.size() - 2].Type);//second highest high card
-
+		handRankings.push_back(rank);
 
 
 		return HAND_RANKING::THREE_OF_A_KIND;
@@ -116,12 +117,18 @@ HAND_RANKING Poker::EvaluateCurrentPlayerHand()
 	return HAND_RANKING::HIGH_CARD;
 }
 
-Player* Poker::DetermineWinner()
+std::vector<Player*> Poker::DetermineWinner()
 {
-	std::stable_sort(handRankings.begin(), handRankings.end());
+	std::vector<Player*> winners;
+	std::stable_sort(handRankings.begin(), handRankings.end());//sort the rankings
 	
+	
+	std::vector<Ranking>::iterator it = std::max_element(handRankings.begin(), handRankings.end());
+	for (it; it != handRankings.end(); ++it)
+		winners.push_back(it->Owner);
+	return winners;
 }
-
+//
 
 
 
@@ -141,7 +148,7 @@ void Poker::removeCards(TYPE_CARD type, std::vector<Card>& cardVec) const
 std::vector<Card> Poker::combineHandAndFlopCards() const
 {
 	std::vector<Card> result = this->flopCards;
-	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
+	std::vector<Card> handvec = Poker::currentPlayer->getHand().getCardVector();
 	result.insert(result.end(), handvec.begin(), handvec.end());
 	
 	return result;
@@ -169,7 +176,7 @@ Poker::Poker(int amountOfFlopCards, int numPlayers)//TEST
 	for (int i = 0; i < amountOfFlopCards; i++)
 		std::cout << this->flopCards[i].toString() << std::endl;
 	for (int i = 0; i < numPlayers; i++) {
-		currentPlayer = Players[i];
+		currentPlayer = &Players[i];
 		std::cout << (int)EvaluateCurrentPlayerHand() << std::endl;
 
 	}
@@ -287,7 +294,7 @@ bool Poker::CheckStraightFlush(std::vector<Card>& straightFlushCards, Card &high
 bool Poker::CheckFourOfAKind() const
 {
 	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector	
-	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
+	std::vector<Card> handvec = Poker::currentPlayer->getHand().getCardVector();
 	tempVector.insert(tempVector.end(), handvec.begin(), handvec.end());
 	int vecLength = tempVector.size();
 	
@@ -310,7 +317,7 @@ bool Poker::CheckFullHouse(Card &tripletCard, Card &pairCard) const
 {
 	if (CheckThreeOfAKind(tripletCard)) {//run the checkThreeOfAKind Func
 		std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
-		std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
+		std::vector<Card> handvec = Poker::currentPlayer->getHand().getCardVector();
 		tempVector.insert(tempVector.end(), handvec.begin(), handvec.end());
 		
 		Poker::removeCards(tripletCard.Type, tempVector);
@@ -367,7 +374,7 @@ bool Poker::CheckFullHouse(Card &tripletCard, Card &pairCard) const
 bool Poker::CheckFlush(std::vector<Card>& flushCards) const
 {
 	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
-	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
+	std::vector<Card> handvec = Poker::currentPlayer->getHand().getCardVector();
 	tempVector.insert(tempVector.end(), handvec.begin(), handvec.end());
 	int vecLength = tempVector.size();
 	int numOccurencesOfSuit = 0;
@@ -399,7 +406,7 @@ bool Poker::CheckFlush(std::vector<Card>& flushCards) const
 bool Poker::CheckStraight(std::vector<Card>& straightCards) const
 {
 	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
-	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
+	std::vector<Card> handvec = Poker::currentPlayer->getHand().getCardVector();
 	tempVector.insert(tempVector.end(), handvec.begin(), handvec.end());
 	int vecLength = tempVector.size();
 	bool containsAce = false;
@@ -474,7 +481,7 @@ bool Poker::CheckStraight(std::vector<Card>& straightCards) const
 bool Poker::CheckThreeOfAKind(Card& threeOfAKindCard) const
 {
 	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
-	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
+	std::vector<Card> handvec = Poker::currentPlayer->getHand().getCardVector();
 	tempVector.insert(tempVector.end(), handvec.begin(), handvec.end());
 	int vecLength = tempVector.size();
 	bool threeOfAKindFound = false;
@@ -529,7 +536,7 @@ bool Poker::CheckThreeOfAKind(Card& threeOfAKindCard) const
 bool Poker::CheckTwoPairs(Card &higherPairCard, Card &lowerPairCard) const
 {
 	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
-	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
+	std::vector<Card> handvec = Poker::currentPlayer->getHand().getCardVector();
 
 	tempVector.insert(tempVector.end(), handvec.begin(), handvec.end());
 	int vecLength = tempVector.size();
@@ -581,7 +588,7 @@ bool Poker::CheckTwoPairs(Card &higherPairCard, Card &lowerPairCard) const
 bool Poker::CheckOnePair(Card& pairCard) const
 {
 	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
-	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
+	std::vector<Card> handvec = Poker::currentPlayer->getHand().getCardVector();
 	tempVector.insert(tempVector.end(), handvec.begin(), handvec.end());
 	int vecLength = tempVector.size();
 
@@ -604,7 +611,7 @@ bool Poker::CheckOnePair(Card& pairCard) const
 Card Poker::EvaluateHighCard() const
 {
 	std::vector<Card> tempVector = Poker::flopCards;//tempvector to store both hand cards and flop cards in one vector
-	std::vector<Card> handvec = Poker::currentPlayer.getHand().getCardVector();
+	std::vector<Card> handvec = Poker::currentPlayer->getHand().getCardVector();
 	tempVector.insert(tempVector.end(), handvec.begin(), handvec.end());
 	std::stable_sort(tempVector.begin(), tempVector.end());//sort the hand + flop vector by the type of card
 	return tempVector.back();
