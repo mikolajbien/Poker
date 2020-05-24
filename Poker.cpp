@@ -19,7 +19,7 @@ HAND_RANKING Poker::EvaluateCurrentPlayerHand()
 	Ranking rank((this->currentPlayer));
 	if (Poker::CheckRoyalFlush()) {
 		rank.rankOfHand = HAND_RANKING::ROYAL_FLUSH;
-		
+		handRankings.push_back(rank);
 		return HAND_RANKING::ROYAL_FLUSH;
 	}
 	if (Poker::CheckStraightFlush(temp, cardTemp)) {
@@ -30,7 +30,9 @@ HAND_RANKING Poker::EvaluateCurrentPlayerHand()
 	}
 	if (Poker::CheckFourOfAKind()) {
 		rank.rankOfHand = HAND_RANKING::FOUR_OF_A_KIND;
-		//no tie breaking logic needed
+		rank.tiebreakerCards.push_back(cardTemp.Type);
+		rank.tiebreakerCards.push_back(cardTemp2.Type);
+		handRankings.push_back(rank);
 		return HAND_RANKING::FOUR_OF_A_KIND;
 	}
 	if (Poker::CheckFullHouse(cardTemp, cardTemp2)) {
@@ -83,7 +85,6 @@ HAND_RANKING Poker::EvaluateCurrentPlayerHand()
 
 		//add the kicker card needed for rare tiebreakers
 		rank.tiebreakerCards.push_back(Poker::EvaluateHighCard(handAndFlopVec).Type);
-
 		handRankings.push_back(rank);
 		return HAND_RANKING::TWO_PAIR;
 	}
@@ -159,7 +160,7 @@ Poker::Poker(int amountOfFlopCards, int numPlayers)//TEST
 {
 	this->gameDeck = Deck();
 	this->gameDeck.Shuffle();
-	//this->gameDeck = Deck({Card(DIAMONDS, TEN) ,Card(HEARTS, ACE) ,Card(CLUBS, FIVE), Card(HEARTS, NINE), Card(HEARTS, EIGHT), Card(HEARTS, FIVE), Card(HEARTS, FOUR), Card(HEARTS, QUEEN), Card(HEARTS, TWO) });
+	//this->gameDeck = Deck({ Card(CLUBS, EIGHT),Card(HEARTS, SEVEN),Card(SPADES, JACK),Card(HEARTS, JACK), Card(DIAMONDS, FIVE),Card(SPADES, THREE),Card(DIAMONDS, ACE) ,Card(SPADES, QUEEN) ,Card(HEARTS, NINE), Card(CLUBS, KING), Card(CLUBS, NINE), Card(SPADES, FOUR), Card(CLUBS, TEN), Card(DIAMONDS, FOUR), Card(DIAMONDS, NINE) });
 	for (int i = 0; i < numPlayers; i++)
 	{
 		std::string name = "player " + std::to_string(i);

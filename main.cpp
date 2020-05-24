@@ -10,10 +10,11 @@ int main()
 {
     
    
-    Poker poker(5, 5);
+    Poker poker(5, 8);
     std::vector<Player*> winners = poker.DetermineWinner();
 
     for (std::vector<Player*>::iterator it = winners.begin(); it != winners.end(); ++it)
         std::cout << (*it)->getName() << std::endl;
+    getchar();
 }
 //
