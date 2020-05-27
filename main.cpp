@@ -15,6 +15,6 @@ int main()
 
     for (std::vector<Player*>::iterator it = winners.begin(); it != winners.end(); ++it)
         std::cout << (*it)->getName() << std::endl;
-    getchar();
+    //getchar();
 }
 //

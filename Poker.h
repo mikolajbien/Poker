@@ -207,7 +207,10 @@ struct Ranking {
 class Poker {//class representing a Poker Game
 private:
 	Player* currentPlayer;
-	
+	Player* Dealer;
+	Player* bigBlind;
+	Player* smallBlind;
+	int round;
 	double bigBlindAmt;
 	double smlBlindAmt;
 	double highestBet;
@@ -220,8 +223,12 @@ private:
 	std::vector<Card> combineHandAndFlopCards() const;
 public:
 	
+	Poker(double bigBlindAmt, double smallBlindAmt);
+	Poker(int amountOfFlopCards, int numPlayers);//TESTING
+	void ChooseRandomDealer();
+	void BetBlinds();
 
-	Poker(int amountOfFlopCards, int numPlayers);
+
 	bool CheckRoyalFlush() const;
 	bool CheckStraightFlush(std::vector<Card> &straightflushCards, Card& highCard) const;
 	bool CheckFourOfAKind() const;
@@ -234,8 +241,10 @@ public:
 	Card EvaluateHighCard() const; 
 	static Card EvaluateHighCard(std::vector<Card> cardVec);
 
+	void AddPlayer(Player p);
 	void DealOutCards();
 	HAND_RANKING EvaluateCurrentPlayerHand();
 	std::vector<Player*> DetermineWinner();
-
+	
+	
 };

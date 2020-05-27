@@ -8,8 +8,9 @@ Player::Player()
 
 Player::Player(std::string name)
 {
+	this->isFolded = false;
 	this->name = name;
-	this->Status = PLAYER_STATUS::NO_STATUS;
+	
 }
 
 void Player::DealToPlayer(Deck &gameDeck)
@@ -17,12 +18,14 @@ void Player::DealToPlayer(Deck &gameDeck)
 	Player::playerHand.addCards(gameDeck.Deal(), gameDeck.Deal());
 }
 
-const bool Player::GetIsSittingOut()
+void Player::PlaceBet(const double betAmount)
 {
-	return Player::isSittingOut;
+	this->Money -= betAmount;
 }
 
-const bool Player::GetIsFolded()
+
+
+bool Player::GetIsFolded() const
 {
 	return Player::isFolded;
 }
@@ -36,3 +39,5 @@ std::string Player::getName() const
 {
 	return this->name;
 }
+
+

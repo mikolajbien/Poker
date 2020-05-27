@@ -38,3 +38,8 @@ void Deck::returnCardToDeck(Card CardToReturn)
 	CardVector.push_back(CardToReturn);
 }
 
+int Deck::GetRandomNumber(int upperBound)
+{
+	return rng() % upperBound;
+}
+

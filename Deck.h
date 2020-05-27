@@ -96,4 +96,5 @@ public:
 	void Shuffle();
 	Card Deal();
 	void returnCardToDeck(Card CardToReturn);
+	int GetRandomNumber(int upperBound);
 };

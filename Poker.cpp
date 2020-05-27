@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "Poker.h"
 
+void Poker::AddPlayer(Player p)
+{
+	this->Players.push_back(p);
+}
+
 void Poker::DealOutCards()
 {
 	std::vector<Player>::iterator it;
@@ -8,6 +13,51 @@ void Poker::DealOutCards()
 		it->DealToPlayer(this->gameDeck);
 	}
 }
+Poker::Poker(double bigBlindAmt, double smallBlindAmt)
+{
+	
+	this->bigBlindAmt = bigBlindAmt;
+	this->smlBlindAmt = smallBlindAmt;
+	this->round = 1;
+	this->highestBet = 0;
+	this->numPlayers = 0;
+	this->currentPlayer = nullptr;
+	this->Dealer = nullptr;
+	this->bigBlind = nullptr;
+	this->smallBlind = nullptr;
+
+}
+void Poker::ChooseRandomDealer()
+{
+	int i = this->gameDeck.GetRandomNumber(this->Players.size() - 1);
+	std::vector<Player>::iterator it = this->Players.begin();
+	it+= i;//set iterator to point at random index
+	this->Dealer = &(*it);//make that player the dealer
+	it += 1;
+	if (it == Players.end())
+		it = Players.begin();
+	
+	this->smallBlind = &(*it);
+	it += 1;
+	if (it == Players.end())
+		it = Players.begin();
+	
+	this->bigBlind = &(*it);
+}
+
+void Poker::BetBlinds() {
+	this->smallBlind->PlaceBet(smlBlindAmt);
+	this->bigBlind->PlaceBet(bigBlindAmt);
+}
+
+
+
+
+
+
+
+
+
 
 
 //this method ranks each players hands including tiebreaking measures
@@ -156,9 +206,12 @@ std::vector<Card> Poker::combineHandAndFlopCards() const
 }
 
 
+
+
+
 Poker::Poker(int amountOfFlopCards, int numPlayers)//TEST
 {
-	this->gameDeck = Deck();
+	//this->gameDeck = Deck();
 	this->gameDeck.Shuffle();
 	//this->gameDeck = Deck({ Card(CLUBS, EIGHT),Card(HEARTS, SEVEN),Card(SPADES, JACK),Card(HEARTS, JACK), Card(DIAMONDS, FIVE),Card(SPADES, THREE),Card(DIAMONDS, ACE) ,Card(SPADES, QUEEN) ,Card(HEARTS, NINE), Card(CLUBS, KING), Card(CLUBS, NINE), Card(SPADES, FOUR), Card(CLUBS, TEN), Card(DIAMONDS, FOUR), Card(DIAMONDS, NINE) });
 	for (int i = 0; i < numPlayers; i++)
@@ -183,6 +236,7 @@ Poker::Poker(int amountOfFlopCards, int numPlayers)//TEST
 	}
 	
 }
+
 //
 bool Poker::CheckRoyalFlush() const
 {
